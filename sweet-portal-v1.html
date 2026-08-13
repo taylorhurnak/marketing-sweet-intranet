@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sweet Portal — Team Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grad: linear-gradient(135deg, #8cc63f, #1f6b3a, #123a1f);
+    --wash-top: #f2f8f0;
+    --wash-bottom: #ffffff;
+    --heading: #152417;
+    --body: #54655a;
+    --muted: #8b988e;
+    --card-border: #e2ecdf;
+    --card-shadow: 0 1px 2px rgba(21,36,23,0.04), 0 8px 24px rgba(21,36,23,0.05);
+    --card-shadow-hover: 0 4px 10px rgba(21,36,23,0.06), 0 16px 32px rgba(21,36,23,0.09);
+
+    --c-sales: #e8663f;      /* coral */
+    --c-training: #d99a2b;   /* amber */
+    --c-tech: #2f7fd6;       /* blue */
+    --c-policy: #7b5fd1;     /* purple */
+    --c-sites: #1f8f8a;      /* teal */
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    font-family:'Inter', system-ui, sans-serif;
+    color: var(--body);
+    background: linear-gradient(180deg, var(--wash-top) 0%, var(--wash-bottom) 420px);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3{ font-family:'Manrope', sans-serif; color: var(--heading); margin:0; }
+  a{ text-decoration:none; color:inherit; }
+  img{ display:block; }
+
+  a:focus-visible, input:focus-visible, button:focus-visible{
+    outline: 2px solid #1f6b3a;
+    outline-offset: 2px;
+  }
+
+  .wrap{ max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+  header.topbar{
+    position: sticky; top:0; z-index: 20;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .topbar-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 14px 28px; max-width: 1180px; margin:0 auto; gap: 20px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand img{ height: 30px; width:auto; }
+  .brand-meta{ line-height:1.15; }
+  .brand-meta .sub{ font-size: 12px; color: var(--muted); font-weight:500; }
+
+  nav.pills{ display:flex; gap:8px; flex-wrap:wrap; }
+  nav.pills a{
+    font-size: 13px; font-weight:600; color: var(--heading);
+    padding: 7px 14px; border-radius: 999px; border:1px solid var(--card-border);
+    background:#fff; white-space:nowrap; transition: all .15s ease;
+  }
+  nav.pills a:hover{ border-color:#1f6b3a; color:#1f6b3a; }
+
+  .hero{ padding: 56px 0 36px; }
+  .hero h1{ font-size: 38px; font-weight:800; line-height:1.15; letter-spacing:-0.01em; }
+  .hero h1 .accent{
+    background: var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p{ margin-top:14px; max-width: 560px; font-size:15.5px; line-height:1.6; }
+
+  .search-box{
+    margin-top: 28px; max-width: 460px;
+    display:flex; align-items:center; gap:10px;
+    background:#fff; border:1px solid var(--card-border); border-radius:12px;
+    padding: 12px 16px; box-shadow: var(--card-shadow);
+  }
+  .search-box svg{ flex-shrink:0; color: var(--muted); }
+  .search-box input{
+    border:none; outline:none; font-family:'Inter'; font-size:14.5px; width:100%;
+    background:transparent; color: var(--heading);
+  }
+  .search-box input::placeholder{ color: var(--muted); }
+
+  .no-results{
+    display:none; margin-top: 40px; padding: 40px 20px; text-align:center;
+    color: var(--muted); font-size:14.5px;
+  }
+  .no-results.show{ display:block; }
+
+  section.category{ padding: 30px 0; }
+  .cat-head{ display:flex; align-items:center; gap:12px; margin-bottom: 20px; }
+  .cat-icon{
+    width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .cat-icon svg{ width:19px; height:19px; }
+  .cat-head h2{ font-size: 20px; font-weight:800; }
+
+  .subcat + .subcat{ margin-top: 26px; }
+  .subcat-label{
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--muted); margin: 0 0 12px 2px;
+  }
+
+  .tile-disabled{ opacity: .6; }
+  .tile-disabled:hover{ transform:none; box-shadow: var(--card-shadow); border-color: var(--card-border); cursor:default; }
+  .tile-disabled .visit-btn{ background:#eef0ee; color: var(--muted); }
+  .tile-disabled:hover .visit-btn{ background:#eef0ee; }
+
+  .tile-grid{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap:16px;
+  }
+
+  .tile{
+    position: relative;
+    overflow: hidden;
+    background:#fff; border:1px solid var(--card-border); border-radius:14px;
+    padding: 20px 18px 18px; box-shadow: var(--card-shadow);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    display:flex; flex-direction:column;
+    min-height: 182px;
+  }
+  .tile:hover{ transform: translateY(-2px); box-shadow: var(--card-shadow-hover); border-color: #d7e6d2; }
+
+  .tile-desc{
+    font-size: 12px; line-height: 1.45; color: var(--body); margin-top: 12px;
+  }
+
+  .tile-topbar{
+    position:absolute; top:0; left:0; right:0; height:4px;
+    background: linear-gradient(90deg, #8cc63f, #1f6b3a, #123a1f);
+  }
+
+  .tile-top{ display:flex; align-items:flex-start; gap:12px; }
+  .badge{
+    width:42px; height:42px; border-radius:11px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .badge svg{ width:20px; height:20px; }
+  .tile-info .name{ font-weight:700; font-size:14.5px; color: var(--heading); line-height:1.3; }
+  .tile-info .domain{ font-size:12px; color: var(--muted); margin-top:3px; word-break: break-all; line-height:1.4; }
+
+  .visit-btn{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    font-size:13px; font-weight:700; color: var(--heading);
+    background: #eef5ea; border-radius:999px; padding: 9px 0;
+    transition: background .15s ease;
+    margin-top: auto;
+  }
+  .tile:hover .visit-btn{ background:#dcecd4; }
+  .visit-btn svg{ width:13px; height:13px; }
+
+  footer{
+    margin-top: 40px; border-top:1px solid var(--card-border);
+    padding: 22px 0 40px;
+  }
+  .footer-inner{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  footer p{ font-size:12.5px; color: var(--muted); margin:0; }
+
+  @media (max-width: 640px){
+    .topbar-inner{ flex-direction:column; align-items:flex-start; gap:12px; }
+    nav.pills{ width:100%; overflow-x:auto; }
+    .hero h1{ font-size: 28px; }
+    .tile-grid{ grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 420px){
+    .tile-grid{ grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .tile, nav.pills a, .visit-btn{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <linearGradient id="grad-sales" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e8663f"/>
+      <stop offset="100%" stop-color="#f7b399"/>
+    </linearGradient>
+    <linearGradient id="grad-training" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d99a2b"/>
+      <stop offset="100%" stop-color="#f4d896"/>
+    </linearGradient>
+    <linearGradient id="grad-tech" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2f7fd6"/>
+      <stop offset="100%" stop-color="#a9d0f5"/>
+    </linearGradient>
+    <linearGradient id="grad-policy" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7b5fd1"/>
+      <stop offset="100%" stop-color="#cabdf0"/>
+    </linearGradient>
+    <linearGradient id="grad-sites" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1f8f8a"/>
+      <stop offset="100%" stop-color="#9fdcd6"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <img src="marketing-sweet-logo-black.png" alt="Marketing Sweet logo">
+      <div class="brand-meta">
+        <div style="font-weight:800; font-family:'Manrope'; color:var(--heading); font-size:15px;">Sweet Portal</div>
+        <div class="sub">Team hub</div>
+      </div>
+    </div>
+    <nav class="pills">
+      <a href="#ms-sales-tools">MS Sales Tools</a>
+      <a href="#quodo-sales-tools">Quodo Sales Tools</a>
+      <a href="#team-training">Team Training</a>
+      <a href="#company-technologies">Technologies</a>
+      <a href="#company-policies">Policies</a>
+      <a href="#company-websites">Websites</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Everything the team needs,<br><span class="accent">in one place.</span></h1>
+    <p>Sales tools, training portals, company logins and policies — all in one quick-link hub. Use the categories to find your quicklink, or look for something specific using the search bar below.</p>
+
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Search links, tools, portals…" autocomplete="off">
+    </div>
+  </section>
+
+  <div class="no-results" id="noResults">No links match your search. Try a different keyword.</div>
+
+  <div id="categoryList">
+    <!-- Marketing Sweet Sales Tools -->
+    <section class="category" id="ms-sales-tools" data-cat>
+      <div class="cat-head">
+        <span class="cat-icon" style="background:#fdece4;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sales)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+        </span>
+        <h2>Marketing Sweet Sales Tools</h2>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-label">New Business</div>
+        <div class="tile-grid">
+          <a class="tile" data-name="SEO Packages" data-domain="seopackages.m-quote.com.au" href="https://seopackages.m-quote.com.au/" target="_blank" rel="noopener">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#fdece4;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sales)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">SEO Packages</div><div class="domain">seopackages.m-quote.com.au</div></div>
+            </div>
+            <div class="tile-desc">Sales tool used to sell SEO packages to new business.</div>
+            <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          </a>
+          <a class="tile" data-name="Google Ads Packages" data-domain="adspackages.m-quote.com.au" href="https://adspackages.m-quote.com.au/" target="_blank" rel="noopener">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#fdece4;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sales)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">Google Ads Packages</div><div class="domain">adspackages.m-quote.com.au</div></div>
+            </div>
+            <div class="tile-desc">Sales tool used to sell Google Ads packages to new business.</div>
+            <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          </a>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-label">Current Clients</div>
+        <div class="tile-grid">
+          <a class="tile" data-name="Campaign Boosters" data-domain="seopackages.m-quote.com.au/add/boosters" href="https://seopackages.m-quote.com.au/add/boosters" target="_blank" rel="noopener">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#fdece4;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sales)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">Campaign Boosters</div><div class="domain">seopackages.m-quote.com.au/add/boosters</div></div>
+            </div>
+            <div class="tile-desc">Ongoing monthly add-ons that can be layered onto an existing membership.</div>
+            <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          </a>
+          <a class="tile" data-name="Additional Services" data-domain="seopackages.m-quote.com.au/add/services" href="https://seopackages.m-quote.com.au/add/services" target="_blank" rel="noopener">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#fdece4;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sales)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">Additional Services</div><div class="domain">seopackages.m-quote.com.au/add/services</div></div>
+            </div>
+            <div class="tile-desc">Once-off additional services that can be layered onto an existing membership.</div>
+            <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          </a>
+          <a class="tile" data-name="Members App" data-domain="members.m-quote.com.au" href="https://members.m-quote.com.au/" target="_blank" rel="noopener">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#fdece4;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sales)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">Members App</div><div class="domain">members.m-quote.com.au</div></div>
+            </div>
+            <div class="tile-desc">Current clients who want to upservice to a bundled package.</div>
+            <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quodo Sales Tools -->
+    <section class="category" id="quodo-sales-tools" data-cat>
+      <div class="cat-head">
+        <span class="cat-icon" style="background:#e2f5f3;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+        </span>
+        <h2>Quodo Sales Tools</h2>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-label">New Business</div>
+        <div class="tile-grid">
+          <a class="tile" data-name="Quodo App" data-domain="quodo-sales-hub.vercel.app" href="https://quodo-sales-hub.vercel.app/" target="_blank" rel="noopener">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">Quodo App</div><div class="domain">quodo-sales-hub.vercel.app</div></div>
+            </div>
+            <div class="tile-desc">Sales tool used to sell website packages to new business.</div>
+            <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          </a>
+          <a class="tile" data-name="Google Reviews" data-domain="sweetgroup.marketingsweet.com.au/google-reviews" href="https://sweetgroup.marketingsweet.com.au/google-reviews" target="_blank" rel="noopener">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">Google Reviews</div><div class="domain">sweetgroup.marketingsweet.com.au/google-reviews</div></div>
+            </div>
+            <div class="tile-desc">Internal landing page with all company 5-star reviews.</div>
+            <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          </a>
+        </div>
+      </div>
+
+      <div class="subcat">
+        <div class="subcat-label">Current Clients</div>
+        <div class="tile-grid">
+          <div class="tile tile-disabled" data-name="Training Centre" data-domain="Link coming soon">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">Training Centre</div><div class="domain">Link coming soon</div></div>
+            </div>
+            <span class="visit-btn">Coming soon</span>
+          </div>
+          <a class="tile" data-name="Domain Renewals" data-domain="app.quodo.com.au/domain" href="https://www.app.quodo.com.au/domain" target="_blank" rel="noopener">
+            <span class="tile-topbar"></span>
+            <div class="tile-top">
+              <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+              <div class="tile-info"><div class="name">Domain Renewals</div><div class="domain">app.quodo.com.au/domain</div></div>
+            </div>
+            <div class="tile-desc">Sales tool used to process licenses for new or expiring domains.</div>
+            <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Training -->
+    <section class="category" id="team-training" data-cat>
+      <div class="cat-head">
+        <span class="cat-icon" style="background:#faf1de;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-training)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </span>
+        <h2>Team Training</h2>
+      </div>
+      <div class="tile-grid">
+        <a class="tile" data-name="SEO Packages" data-domain="app.m-quote.com.au" href="https://app.m-quote.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#faf1de;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-training)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+            <div class="tile-info"><div class="name">SEO Packages</div><div class="domain">app.m-quote.com.au</div></div>
+          </div>
+          <div class="tile-desc">Training resources for all Marketing Sweet related SEO &amp; Google Ads products.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Quodo Plans" data-domain="app.quodo.com.au/plans" href="https://www.app.quodo.com.au/plans" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#faf1de;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-training)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+            <div class="tile-info"><div class="name">Quodo Plans</div><div class="domain">app.quodo.com.au/plans</div></div>
+          </div>
+          <div class="tile-desc">Training resources for all Quodo website products.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Company Training Schedule" data-domain="training-portal-mauve.vercel.app/sessions" href="https://training-portal-mauve.vercel.app/sessions" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#faf1de;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-training)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+            <div class="tile-info"><div class="name">Company Training Schedule</div><div class="domain">training-portal-mauve.vercel.app/sessions</div></div>
+          </div>
+          <div class="tile-desc">Daily videos &amp; quizzes developed from weekly training sessions with Corie.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Sales Training Portal" data-domain="training-portal-mauve.vercel.app" href="https://training-portal-mauve.vercel.app/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#faf1de;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-training)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+            <div class="tile-info"><div class="name">Sales Training Portal</div><div class="domain">training-portal-mauve.vercel.app</div></div>
+          </div>
+          <div class="tile-desc">Trainee onboarding modules for new team members.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="MS Morning Motivation" data-domain="marketingsweet.com.au/the-winning-mindset" href="https://marketingsweet.com.au/the-winning-mindset/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#faf1de;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-training)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+            <div class="tile-info"><div class="name">MS Morning Motivation</div><div class="domain">marketingsweet.com.au/the-winning-mindset</div></div>
+          </div>
+          <div class="tile-desc">Daily morning mindset video schedule.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="The Winning Mindset" data-domain="winningmindset.marketingsweet.com.au" href="https://winningmindset.marketingsweet.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#faf1de;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-training)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+            <div class="tile-info"><div class="name">The Winning Mindset</div><div class="domain">winningmindset.marketingsweet.com.au</div></div>
+          </div>
+          <div class="tile-desc">Marketing Sweet's Winning Mindset video archive.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Company Technologies -->
+    <section class="category" id="company-technologies" data-cat>
+      <div class="cat-head">
+        <span class="cat-icon" style="background:#e7f0fb;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-tech)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg>
+        </span>
+        <h2>Company Technologies</h2>
+      </div>
+      <div class="tile-grid">
+        <a class="tile" data-name="ClickUp" data-domain="app.clickup.com" href="https://app.clickup.com/login" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e7f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-tech)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></span>
+            <div class="tile-info"><div class="name">ClickUp</div><div class="domain">app.clickup.com</div></div>
+          </div>
+          <div class="tile-desc">Project &amp; task management platform used across all departments.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Slack" data-domain="slack.com" href="https://slack.com/signin" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e7f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-tech)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></span>
+            <div class="tile-info"><div class="name">Slack</div><div class="domain">slack.com</div></div>
+          </div>
+          <div class="tile-desc">Team messaging &amp; internal communication platform.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Discord" data-domain="support.discord.com" href="https://support.discord.com/auth/v3/signin" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e7f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-tech)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></span>
+            <div class="tile-info"><div class="name">Discord</div><div class="domain">support.discord.com</div></div>
+          </div>
+          <div class="tile-desc">Community &amp; team voice/chat platform.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Claude AI" data-domain="platform.claude.com" href="https://platform.claude.com/login" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e7f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-tech)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></span>
+            <div class="tile-info"><div class="name">Claude AI</div><div class="domain">platform.claude.com</div></div>
+          </div>
+          <div class="tile-desc">AI assistant used for research, writing &amp; workflow support.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="ChatGPT" data-domain="chatgpt.com" href="https://chatgpt.com/auth/login" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e7f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-tech)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></span>
+            <div class="tile-info"><div class="name">ChatGPT</div><div class="domain">chatgpt.com</div></div>
+          </div>
+          <div class="tile-desc">AI assistant used for research, writing &amp; workflow support.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Loom" data-domain="loom.com" href="https://www.loom.com/login" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e7f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-tech)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></span>
+            <div class="tile-info"><div class="name">Loom</div><div class="domain">loom.com</div></div>
+          </div>
+          <div class="tile-desc">Screen recording tool for quick video walkthroughs &amp; updates.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="ScribeHow" data-domain="scribehow.com" href="https://scribehow.com/signin" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e7f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-tech)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg></span>
+            <div class="tile-info"><div class="name">ScribeHow</div><div class="domain">scribehow.com</div></div>
+          </div>
+          <div class="tile-desc">Tool for creating step-by-step process guides &amp; documentation.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Company Policies -->
+    <section class="category" id="company-policies" data-cat>
+      <div class="cat-head">
+        <span class="cat-icon" style="background:#efeafa;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-policy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+        </span>
+        <h2>Company Policies</h2>
+      </div>
+      <div class="tile-grid">
+        <a class="tile" data-name="Sick Leave Policy" data-domain="drive.google.com" href="https://drive.google.com/file/d/12-o1PoK7jTPahC54CTxB91X6WbZMOIRJ/view?usp=drive_link" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#efeafa;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-policy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>
+            <div class="tile-info"><div class="name">Sick Leave Policy</div><div class="domain">drive.google.com</div></div>
+          </div>
+          <div class="tile-desc">Company policy document outlining how to request sick leave.</div>
+          <span class="visit-btn">View document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Annual Leave Policy" data-domain="drive.google.com" href="https://drive.google.com/file/d/1kUeeqEWQx7JYY8vE5iUW12QmOCUI4NYr/view?usp=drive_link" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#efeafa;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-policy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>
+            <div class="tile-info"><div class="name">Annual Leave Policy</div><div class="domain">drive.google.com</div></div>
+          </div>
+          <div class="tile-desc">Company policy document outlining how to request annual leave.</div>
+          <span class="visit-btn">View document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="HR Policies" data-domain="drive.google.com" href="https://drive.google.com/drive/folders/1JfRVnWDNqtHItUPD1AqbqFpmVSKwTTD6" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#efeafa;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-policy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>
+            <div class="tile-info"><div class="name">HR Policies</div><div class="domain">drive.google.com</div></div>
+          </div>
+          <div class="tile-desc">Shared drive folder containing all HR policy documents.</div>
+          <span class="visit-btn">Open folder <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Company Websites -->
+    <section class="category" id="company-websites" data-cat>
+      <div class="cat-head">
+        <span class="cat-icon" style="background:#e2f5f3;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>
+        </span>
+        <h2>Company Websites</h2>
+      </div>
+      <div class="tile-grid">
+        <a class="tile" data-name="Sweet Group" data-domain="sweetgroup.marketingsweet.com.au" href="https://sweetgroup.marketingsweet.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <div class="tile-info"><div class="name">Sweet Group</div><div class="domain">sweetgroup.marketingsweet.com.au</div></div>
+          </div>
+          <div class="tile-desc">Parent company site showcasing the full family of Sweet Group brands.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Marketing Sweet" data-domain="marketingsweet.com.au" href="https://marketingsweet.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <div class="tile-info"><div class="name">Marketing Sweet</div><div class="domain">marketingsweet.com.au</div></div>
+          </div>
+          <div class="tile-desc">Core agency brand site for SEO, Google Ads and digital marketing services.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Quodo" data-domain="quodo.com.au" href="https://www.quodo.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <div class="tile-info"><div class="name">Quodo</div><div class="domain">quodo.com.au</div></div>
+          </div>
+          <div class="tile-desc">Brand site for the group's website design &amp; hosting products.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Adelaide Web Designer" data-domain="adelaidewebdesigner.com.au" href="https://adelaidewebdesigner.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <div class="tile-info"><div class="name">Adelaide Web Designer</div><div class="domain">adelaidewebdesigner.com.au</div></div>
+          </div>
+          <div class="tile-desc">Localised lead-gen site targeting web design clients in Adelaide.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Yorke Web Designer" data-domain="yorkewebdesigner.com.au" href="https://yorkewebdesigner.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <div class="tile-info"><div class="name">Yorke Web Designer</div><div class="domain">yorkewebdesigner.com.au</div></div>
+          </div>
+          <div class="tile-desc">Localised lead-gen site targeting web design clients on the Yorke Peninsula.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <div class="tile tile-disabled" data-name="School Web Designer" data-domain="Link coming soon">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <div class="tile-info"><div class="name">School Web Designer</div><div class="domain">Link coming soon</div></div>
+          </div>
+          <span class="visit-btn">Coming soon</span>
+        </div>
+        <a class="tile" data-name="Best SEO Company Adelaide" data-domain="bestseocompanyadelaide.com.au" href="https://bestseocompanyadelaide.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <div class="tile-info"><div class="name">Best SEO Company Adelaide</div><div class="domain">bestseocompanyadelaide.com.au</div></div>
+          </div>
+          <div class="tile-desc">Localised lead-gen site targeting SEO clients in Adelaide.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+        <a class="tile" data-name="Hybrid Recruitment" data-domain="hybridrecruitment.com.au" href="https://hybridrecruitment.com.au/" target="_blank" rel="noopener">
+          <span class="tile-topbar"></span>
+          <div class="tile-top">
+            <span class="badge" style="background:#e2f5f3;"><svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-sites)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <div class="tile-info"><div class="name">Hybrid Recruitment</div><div class="domain">hybridrecruitment.com.au</div></div>
+          </div>
+          <div class="tile-desc">Standalone site for the group's recruitment services arm.</div>
+          <span class="visit-btn">Visit site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <p>Sweet Portal internal hub — v1</p>
+      <p id="footerCount">33 links across 6 categories</p>
+    </div>
+  </footer>
+</main>
+
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const categories = Array.from(document.querySelectorAll('[data-cat]'));
+  const noResults = document.getElementById('noResults');
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    let anyVisible = false;
+
+    categories.forEach(cat => {
+      const tiles = Array.from(cat.querySelectorAll('.tile'));
+      let catHasVisible = false;
+
+      tiles.forEach(tile => {
+        const name = tile.dataset.name.toLowerCase();
+        const domain = tile.dataset.domain.toLowerCase();
+        const match = !q || name.includes(q) || domain.includes(q);
+        tile.style.display = match ? '' : 'none';
+        if (match) catHasVisible = true;
+      });
+
+      cat.style.display = catHasVisible ? '' : 'none';
+      if (catHasVisible) anyVisible = true;
+    });
+
+    noResults.classList.toggle('show', !anyVisible);
+  });
+</script>
+
+</body>
+</html>
